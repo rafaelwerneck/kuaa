@@ -1,0 +1,7 @@
+<software name="Percentage">
+    <abletolink>collection</abletolink>
+    <abletolink>preprocessing</abletolink>
+    <parameter type="checkbox" name="Select per Classes" default="True" />
+    <parameter type="float" name="Train Size" default="0" />
+    <parameter type="float" name="Test Size" default="0" />
+</software>

@@ -1,0 +1,5 @@
+<software name="Load K-Fold">
+    <abletolink>collection</abletolink>
+    <abletolink>preprocessing</abletolink>
+    <parameter type="integer" name="Number of Folds" reference="train_test_methods/load_k_fold/create_k_fold_parameters.py"/>
+</software>

@@ -1,0 +1,5 @@
+<software name="Stratified K-Fold">
+    <abletolink>collection</abletolink>
+    <abletolink>preprocessing</abletolink>
+    <parameter type="integer" name="Number of Folds" default="3" />
+</software>
