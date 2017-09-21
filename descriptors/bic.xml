@@ -1,0 +1,6 @@
+<software name="BIC">
+    <abletolink>collection</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="integer" name="Bins" default="128" fixed="True"/>
+</software>

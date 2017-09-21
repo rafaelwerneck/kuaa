@@ -1,0 +1,5 @@
+<software name="CCOM">
+    <abletolink>collection</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+</software>
