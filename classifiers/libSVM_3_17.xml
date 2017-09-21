@@ -1,0 +1,16 @@
+<software name="libSVM 3.17">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Kernel" default="Linear">
+        <item>Linear</item>
+        <item>RBF</item>
+        <item>Polynomial</item>
+        <item>Sigmoid</item>
+    </parameter>
+    <parameter type="float" name="C" default="1.0" link="nome"/>
+    <parameter type="integer" name="degree" default="3" />
+    <parameter type="float" name="gamma" default="0.0" />
+    <parameter type="integer" name="Cross-Validation" default="3" />
+    <parameter type="checkbox" name="Probabilities" default="False" />
+</software>

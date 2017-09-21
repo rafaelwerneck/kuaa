@@ -1,0 +1,6 @@
+<software name="Standardized Euclidean">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion</abletolink>
+    <parameter type="list" name="V" default="None" />
+</software>

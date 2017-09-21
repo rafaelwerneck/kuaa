@@ -1,0 +1,7 @@
+<software name="Weighted Minkowski">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion</abletolink>
+    <parameter type="float" name="p" default="2" />
+    <parameter type="list" name="w" />
+</software>

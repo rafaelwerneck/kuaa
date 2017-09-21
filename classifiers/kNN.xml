@@ -1,0 +1,16 @@
+<software name="kNN">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="integer" name="k" default="5" />
+    <parameter type="dropdown" name="Weights" default="uniform">
+        <item>uniform</item>
+        <item>distance</item>
+    </parameter>
+    <parameter type="dropdown" name="Algorithm" default="auto">
+        <item>auto</item>
+        <item>ball_tree</item>
+        <item>kd_tree</item>
+        <item>brute</item>
+    </parameter>
+</software>

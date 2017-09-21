@@ -1,0 +1,10 @@
+<software name="LogisticRegression">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Penalty" default="l2">
+        <item>l1</item>
+        <item>l2</item>
+    </parameter>
+    <parameter type="float" name="C" default="1.0" />
+</software>

@@ -1,0 +1,9 @@
+<software name="DecisionTree">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Criterion" default="gini">
+        <item>gini</item>
+        <item>entropy</item>
+    </parameter>
+</software>

@@ -1,0 +1,6 @@
+<software name="Minkowski">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion</abletolink>
+    <parameter type="float" name="p" default="2" />
+</software>

@@ -1,0 +1,9 @@
+<software name="SVM">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Approach" default="One vs All">
+        <item>One vs All</item>
+        <item>One vs One</item>
+    </parameter>
+</software>

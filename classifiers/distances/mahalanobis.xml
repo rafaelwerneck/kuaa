@@ -1,0 +1,6 @@
+<software name="Mahalanobis">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion</abletolink>
+    <parameter type="list" name="VI" default="None" />
+</software>

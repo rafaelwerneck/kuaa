@@ -1,0 +1,6 @@
+<software name="LDA">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="integer" name="Components" default="1" />
+</software>

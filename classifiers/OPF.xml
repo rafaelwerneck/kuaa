@@ -1,0 +1,30 @@
+<software name="OPF">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Distance" default="Euclidean" reference="classifiers">
+        <item>Descriptor</item>
+        <item>Euclidean</item>
+        <item>distance/minkowski.xml</item>
+        <item>Manhattan</item>
+        <item>distance/standardized_euclidean</item>
+        <item>Squared Euclidean</item>
+        <item>Cosine</item>
+        <item>Correlation</item>
+        <item>Hamming</item>
+        <item>Jaccard</item>
+        <item>Chebyshev</item>
+        <item>Canberra</item>
+        <item>Bray-Curtis</item>
+        <item>distance/mahalanobis</item>
+        <item>Yule</item>
+        <item>Matching</item>
+        <item>Dice</item>
+        <item>Kulsinski</item>
+        <item>Rogers-Tanimoto</item>
+        <item>Russell-Rao</item>
+        <item>Sokal-Michener</item>
+        <item>Sokal-Sneath</item>
+        <item>distance/weighted_minkowski</item>
+    </parameter>
+</software>
