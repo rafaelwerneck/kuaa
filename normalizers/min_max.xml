@@ -1,0 +1,7 @@
+<software name="Min-Max">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="float" name="Min" default="0.0" />
+    <parameter type="float" name="Max" default="1.0" />
+</software>

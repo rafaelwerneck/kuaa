@@ -1,0 +1,9 @@
+<software name="Term Frequency">
+    <abletolink>descriptor</abletolink>
+    <abletolink>normalizer</abletolink>
+    <abletolink>fusion</abletolink>
+    <parameter type="dropdown" name="Norm" default="Manhattan">
+        <item>Manhattan</item>
+        <item>Euclidean</item>
+    </parameter>
+</software>
