@@ -1,0 +1,4 @@
+<software name="F-Measure">
+    <abletolink>classifier</abletolink>
+    <abletolink>fusion_method</abletolink>
+</software>

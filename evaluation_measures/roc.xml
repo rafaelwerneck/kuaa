@@ -1,0 +1,5 @@
+<software name="ROC">
+    <abletolink>classifier</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="list" name="Positive Label" />
+</software>

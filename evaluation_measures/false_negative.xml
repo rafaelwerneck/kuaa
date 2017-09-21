@@ -1,0 +1,5 @@
+<software name="False Negative">
+    <abletolink>classifier</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="list" name="Classes" />
+</software>

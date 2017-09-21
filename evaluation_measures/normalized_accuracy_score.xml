@@ -1,0 +1,4 @@
+<software name="Normalized Accuracy Score" openset="True">
+    <abletolink>classifier</abletolink>
+    <abletolink>fusion_method</abletolink>
+</software>
