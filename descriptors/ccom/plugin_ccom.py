@@ -109,11 +109,11 @@ def extract(img_path, img_classes, param):
     if not os.path.exists(fv_path):
         setup = """
 ctypes = __import__('ctypes')
-plugin = "ccom.so"
+plugin = "%s"
 lib = ctypes.CDLL("%s%s" + plugin)
 img_path = "%s"
 fv_path = "%s"
-        """%(descriptor_path, os.sep, temp_img_path, fv_path)
+        """%(plugin_name, descriptor_path, os.sep, temp_img_path, fv_path)
         
         cmd = """
 lib.Extraction(img_path, fv_path)
