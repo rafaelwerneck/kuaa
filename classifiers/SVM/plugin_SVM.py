@@ -41,10 +41,13 @@ import sys
 import numpy
 from sklearn import preprocessing
 from sklearn.externals import joblib
+from subprocess import call
 
 #Framework imports
 dirname = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(os.path.dirname(dirname))
+call("./prepareLibSVM.sh clean; ./prepareLibSVM")
+call("./prepareLib1VS.sh clean; ./prepareLib1VS")
 import Classifier
 import SVM
 import svmutil
