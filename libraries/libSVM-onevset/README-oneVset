@@ -1,0 +1,175 @@
+This package extends libsvm to support openset recognition using the one-v-set
+extension described in:
+
+W. J. Scheirer, A.  Rocha, A. Sapkota, T. E. Boult, "Toward Open Set 
+Recognition," IEEE Transactions on Pattern Analysis and Machine Intelligence, 
+vol. 35, no. 7, pp. 1757-1772, July, 2013
+
+PDF: http://www.wjscheirer.com/papers/wjs_tpami2013_openset.pdf
+
+@article{10.1109/TPAMI.2012.256,
+author = {W. J. Scheirer and A. Rocha and A. Sapkota and T. E. Boult},
+title = {Toward Open Set Recognition},
+journal ={IEEE Transactions on Pattern Analysis and Machine Intelligence},
+volume = {35},
+number = {7},
+issn = {0162-8828},
+year = {2013},
+pages = {1757-1772},
+doi = {http://doi.ieeecomputersociety.org/10.1109/TPAMI.2012.256},
+}
+
+If you use any of the open set functions please cite appropriately.
+
+There are also extensions using libMR which will be described in other
+publications and should also cite based on libMR licensing if that is used as
+well.
+
+These open set extensions to libSVM are subject to the following:
+
+Copyright (c) 2010-2013  Regents of the University of Colorado and Securics Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in 
+the Software without restriction, including without limitation the rights to 
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following 3 conditions:
+
+1) The above copyright notice and this permission notice shall be included in
+all source code copies or substantial portions of the Software.
+
+2) All documentation and/or advertising materials mentioning features or use of
+this software must display the following acknowledgment:
+
+      This product includes software developed in part at
+      the University of Colorado Colorado Springs and Securics Inc.
+
+3) Neither the name of Regents of the University of Colorado  and Securics Inc.
+nor the names of its contributors may be used to endorse or promote products
+derived from this software without specific prior written permission.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
+IN THE SOFTWARE.
+
+
+Found a bug? Contact Walter Scheirer (wscheirer@fas.harvard.edu)
+
+**********************************************************************
+
+This software is an extension to the well known libsvm package (see README for 
+info on libsvm).  Note the extensions do NOT change the interface so should be 
+easily integrated with any existing package that uses libsvm. Only argument 
+have changed. All model files should be backwards compatable.
+
+This current libonevset extension supports linear, poly., RBF and sigmoid 
+kernels (-t [0-3]).  It should work with custom kernels, but this is untested).
+Note the non-linear kernels are much better if using the libMR extensons rather 
+than the simple one-v-set extension. Documentation/spport for the libMR 
+extensions will be added after publication of the associated papers. 
+
+The extension uses the same command-line processing with a few addeded fields:
+
+    -s 5 : for the one-v-set based on one-class SVM (provides better 
+     generaliztion of one-class, but not trully a discrimative model. This is 
+     not the best performing one-v-set alg. but is included for completeness
+
+    -s 6 : for  one-v-set pair-wise SVM (Better than -s 5, faster than -s 7 
+     but generally not as accurate
+
+    -s 7 : for the one-v-set alg. based on "1-vs-all" binary SVMs (which is 
+     the generally recommended model)
+
+If libMR is enabled, these options become available:
+
+    -s 9 : all-pairs binary W-SVM 
+
+    -s 10 : one-vs-all W-SVM (open_set_training_file required)
+
+    -B optarg : Defines the beta of fmeasure used in the balanced risk 
+     discussed in  the paper.
+
+General arguments:
+
+    -G near_pessure far_pressure : (which allow changes to the "pressure" of 
+     the open-set formulation. Increasing pressure causes increased 
+     generalization; negative pressures cause increased specalization 
+     (e.g. you know you only have a few negative training classes). 
+
+    -V logfilename : (for verbose logs/debugging related to the actual openset 
+     optimization stages)
+
+To use one-v-set (only linear and RBF kernels supported)
+
+
+
+******************** Open Set-specific Example ********************
+
+This open set example uses data from the T-PAMI article (one class from the 
+open universe of 88 classes described in Sec. 5.1).
+
+The features are in the director TestOneVSet
+Unzip feature vectors: 
+home:libSVM-onevset-> cd TestOneVSet; unzip openset-example.zip
+
+Train: home:libSVM-onevset-> ./svm-train -s 7 -t 0 -G 0.15 0.15 openset-example/leopards_training_0.05.data openset-example/leopards_training_0.05.data.model
+
+       Training binary 1-vs-set for class 1 with 70 pos and 70 neg examples
+       *.*
+       optimization finished, #iter = 186
+       nu = 0.015364
+       obj = -1.075484, rho = 2.033487
+       nSV = 77, nBSV = 0
+       Total nSV = 77
+       Total nSV = 77
+
+Predict: home:libSVM-onevset-> ./svm-predict -o openset-example/leopards_testing_0.05.data openset-example/leopards_training_0.05.data.model outpufile
+
+SVM Type 7, Kernel Type 0,  Num Classes 2 
+Classification Accuracy = 97.4194% (453/465)
+  Precision=0.875000,   Recall=0.700000   Fmeasure=0.777778
+   Total tests=465, True pos 21 True Neg 432, False Pos 3, False neg 9
+   Total Pairwise tests=930, True pos 42 True Neg 864, False Pos 6, False neg 18
+  Pairwise Precision=0.875000,   Recall=0.700000   Fmeasure=0.777778
+Multiclass Recognition Rate   =   92.9032% (432/465)
+Multiclass Recognition Recall  =   70% (42/60)
+
+For comparison, results for binary SVM:
+
+Train: home:libSVM-onevset-> ./svm-train -t 0 openset-example/leopards_training_0.05.data openset-example/leopards_training_0.05.data.model
+
+*.*
+optimization finished, #iter = 186
+nu = 0.015364
+obj = -1.075484, rho = 2.033487
+nSV = 77, nBSV = 0
+Total nSV = 77
+
+Predict: home:libSVM-onevset-> ./svm-predict openset-example/leopards_testing_0.05.data openset-example/leopards_training_0.05.data.model outpufile
+
+SVM Type 0, Kernel Type 0,  Num Classes 2 
+Classification Accuracy = 81.0753% (377/465)
+  Precision=0.241071,   Recall=0.900000   Fmeasure=0.380282
+   Total tests=465, True pos 27 True Neg 350, False Pos 85, False neg 3
+   Total Pairwise tests=1860, True pos 842 True Neg 377, False Pos 553, False neg 88
+  Pairwise Precision=0.603584,   Recall=0.905376   Fmeasure=0.724301
+Multiclass Recognition Rate   =   75.2688% (350/465)
+Multiclass Recognition Recall  =   90.5376% (842/930)
+
+Note: For the article "Towards Open Set Recognition", we did not use fixed
+partitions - we performed random cross validation style training testing 
+over a number of folds. This example data was randomly sampled following 
+the procedure described in Sec. 5.1.
+
+All data and further details on its composition can be found at:
+http://www.metarecognition.com/openset
+
+
+********************************************************************************
+Other examples:
+      You can see it being used to train/test in the onevtest.sh example (using a trivial iris example).. note that example is really close set but show different types of models being created/used.
