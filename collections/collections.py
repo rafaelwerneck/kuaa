@@ -43,7 +43,7 @@ import argparse
 def create_xml_collection(collection_path):
     folder = os.path.dirname(collection_path)
     name_file = collection_path.split(os.sep)[-1]
-    xml_path = os.path.join(folder, name_file + ".xml")
+    xml_path = os.path.join(os.path.dirname(__file__), name_file + ".xml")
     
     classes_dict = {}
     count_img = 0

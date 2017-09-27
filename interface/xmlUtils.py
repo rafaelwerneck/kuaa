@@ -367,7 +367,7 @@ def read_collection_description(file_name, contBlock):
     contBlock.add_label_with_linebreak(
         "Classes: %s" % root.attrib['number_classes'])
     contBlock.add_label_with_linebreak(
-        "Instances: %s" % root.attrib['number_images'])
+        "Instances: %s" % root.attrib['number_objects'])
     contBlock.add_label_with_linebreak("List of classes")
 
     # If the experiment is openset, must add checkboxes for the user to select

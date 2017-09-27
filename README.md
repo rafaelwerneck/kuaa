@@ -4,7 +4,7 @@ Kuaa is a workflow-based framework that can be used for designing, deploying, an
 
 ### Paper
 
-Rafael de Oliveira Werneck, Waldir Rodrigues de Almeida, Bernardo Vecchia Stein, Daniel Vatanabe Pazinato, Pedro Ribeiro Mendes Júnior, Otávio Augusto Bizetto Penatti, Anderson Rocha, Ricardo da Silva Torres, Kuaa: A unified framework for design, deployment, execution, and recommendation of machine learning experiments, Future Generation Computer Systems, 2017, ISSN 0167-739X, http://dx.doi.org/10.1016/j.future.2017.06.013. [Bibtex](http://www.recod.ic.unicamp.br/~rwerneck/bibtex/werneck2017kuaa.bib)
+Rafael de Oliveira Werneck, Waldir Rodrigues de Almeida, Bernardo Vecchia Stein, Daniel Vatanabe Pazinato, Pedro Ribeiro Mendes Júnior, Otávio Augusto Bizetto Penatti, Anderson Rocha, Ricardo da Silva Torres, Kuaa: A unified framework for design, deployment, execution, and recommendation of machine learning experiments, In Future Generation Computer Systems, Volume 78, Part 1, 2018, Pages 59-76, ISSN 0167-739X, https://doi.org/10.1016/j.future.2017.06.013. [Bibtex](http://www.recod.ic.unicamp.br/~rwerneck/bibtex/werneck2018kuaa.bib)
 
 --------------
 
