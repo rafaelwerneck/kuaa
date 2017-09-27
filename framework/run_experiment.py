@@ -54,7 +54,6 @@ import read_collection
 import train_test
 import extract_features
 import extract_bag
-import extract_bovg
 import normalize_features
 import classify
 import fusion

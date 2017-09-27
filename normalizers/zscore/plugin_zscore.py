@@ -94,6 +94,7 @@ def normalize(img_path, images, images_set, pos_train_test, parameters, method,
     
     fv_norm = [(img_fv[index] - mean_list[index]) / std_list[index]
             for index in range(len(img_fv))]
+    fv_norm = [fv_item for fv_item in fv_norm if not numpy.isnan(fv_item)]
     #-------------------------------------------------------------------------
 
     return img_path, len(img_classes), img_classes, fv_norm, train_param

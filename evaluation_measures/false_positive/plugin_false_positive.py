@@ -41,7 +41,7 @@ from __future__ import division
 from ast import literal_eval
 from numpy import array
 
-def evaluation(images, test_set, classes_list, pos_train_test, parameters)
+def evaluation(images, test_set, classes_list, pos_train_test, parameters):
     """
     Performs the calculation of False Positive.
     

@@ -105,10 +105,10 @@ def evaluation(images, test_set, classes_list, pos_train_test, parameters):
         
         #Calculate the False Positive Rates, True Positive Rates and the
         #thresholds used to compute the previous.
-        roc = [fpr, tpr, thresholds] = metrics.roc_curve(list_class,
+        fpr, tpr, thresholds = metrics.roc_curve(list_class,
                 result_proba, str(item_class))
         
-        results[item_class] = roc
+        results[item_class] = [fpr.tolist(), tpr.tolist(), thresholds.tolist()]
 
     #-------------------------------------------------------------------------
     print "Success in the calculation of the ROC"
@@ -147,7 +147,6 @@ def write_tex(evaluation_path, classes, node_id):
     evaluation_file = open(evaluation_path, "rb")
     lines = evaluation_file.readlines()
     for each_line in lines:
-        roc_string = util.read_array(lines)
         roc_list.append(literal_eval(each_line))
     evaluation_file.close()
     
@@ -156,15 +155,23 @@ def write_tex(evaluation_path, classes, node_id):
     
     for index_roc, roc_item in enumerate(roc_list):
         for key_class in classes:
+            flag_class = False # Flag to avoid classes outside of the result of ROC
             mean_tpr = 0.0
             mean_fpr = numpy.linspace(0, 1, 100)
             all_tpr = []
             
-            pylab.clf()
             for index, value in enumerate(roc_item):
+                if key_class not in value.keys():
+                    flag_class = True
+                    break
                 fpr, tpr, thresholds = value[key_class]
                 all_tpr.append(interp(mean_fpr, fpr, tpr))
             
+            # In case Flag was activate, this class is not in the ROC result
+            if flag_class:
+                continue
+            
+            pylab.clf()
             mean_tpr = numpy.mean(all_tpr, axis=0)
             std_tpr = numpy.std(all_tpr, axis=0)
             conf_tpr = [stats.t.interval(0.95, len(all_tpr) - 1,
