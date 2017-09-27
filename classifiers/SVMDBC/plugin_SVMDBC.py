@@ -46,9 +46,12 @@ from subprocess import call
 #Framework Imports
 dirname = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(dirname)
-sys.path.append(os.path.join(dirname, 'SVM'))
-call("./prepareLibSVM.sh clean; ./prepareLibSVM")
-call("./prepareLib1VS.sh clean; ./prepareLib1VS")
+SVM_path = os.path.join(dirname, 'SVM')
+sys.path.append(SVM_path)
+call(["./prepareLibSVM.sh", "clean"], cwd="{0}".format(SVM_path))
+call(["./prepareLibSVM.sh"], cwd="{0}".format(SVM_path))
+call(["./prepareLib1VS.sh", "clean"], cwd="{0}".format(SVM_path))
+call(["./prepareLib1VS.sh"], cwd="{0}".format(SVM_path))
 import Classifier
 import SVM
 import svmutil
