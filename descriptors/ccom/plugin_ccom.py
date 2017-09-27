@@ -44,6 +44,12 @@ import platform
 #Imports from the framework
 import util
 
+#CCOM Constants
+COLORDIM = 6
+DISTMAX = 1
+fv_size = DISTMAX * (COLORDIM * COLORDIM * COLORDIM) * (COLORDIM * COLORDIM * \
+    COLORDIM)
+
 num_iterations = 0
 
 def extract(img_path, img_classes, param):
@@ -109,11 +115,11 @@ def extract(img_path, img_classes, param):
     if not os.path.exists(fv_path):
         setup = """
 ctypes = __import__('ctypes')
-plugin = "ccom.so"
+plugin = "%s"
 lib = ctypes.CDLL("%s%s" + plugin)
 img_path = "%s"
 fv_path = "%s"
-        """%(descriptor_path, os.sep, temp_img_path, fv_path)
+        """%(plugin_name, descriptor_path, os.sep, temp_img_path, fv_path)
         
         cmd = """
 lib.Extraction(img_path, fv_path)
@@ -143,6 +149,8 @@ def fv_transform(fv_path):
     floats.
     """
     
+    import struct
+    
     list_fv = []
     
     #Open the file created by the descriptor, save the feature vector in the 
@@ -155,12 +163,13 @@ def fv_transform(fv_path):
     
     #Performs the necessary operations to transform the feature vector into
     #the standard output
-    fv_size = int(file_fv.readline())
+    size = int(file_fv.readline())
+    file_fv.readline()
     list_fv = [0.0] * fv_size
-    values = file_fv.readlines()[1:]
-    for value in values:
-        [index, v] = value.split()
-        list_fv[int(index)] = float(v)
+    for k in range(size):
+        i = struct.unpack('=i', file_fv.read(4))[0]   # assumes 4-byte int
+        w = struct.unpack('=f', file_fv.read(4))[0]   # assumes 4-byte float
+        list_fv[int(i)] = float(w)
         
     file_fv.close()
     os.remove(fv_path)
