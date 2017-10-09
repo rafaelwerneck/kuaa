@@ -2,7 +2,7 @@
     <abletolink>descriptor</abletolink>
     <abletolink>normalizer</abletolink>
     <abletolink>fusion_method</abletolink>
-    <parameter type="dropdown" name="Approach" default="One vs All">
+    <parameter type="dropdown" name="Approach" default="One vs One" fixed="True">
         <item>One vs All</item>
         <item>One vs One</item>
     </parameter>

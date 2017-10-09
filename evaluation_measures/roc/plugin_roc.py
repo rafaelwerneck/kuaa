@@ -198,9 +198,9 @@ def write_tex(evaluation_path, classes, node_id):
     \\centering
     \\includegraphics[width=\\columnwidth]{"%s"}
     \\caption{Receiver Operating Characteristic of class %s of Node %s of Fold %s.}
-    \\label{fig:cm_%s_%s}
+    \\label{fig:cm_%s_%s_%s}
 \\end{figure}
-            """ % (os.path.abspath(file_fig), str(key_class), node_id,
-                    str(key_class), node_id, index_roc)
+            """ % (os.path.abspath(file_fig), str(key_class), node_id, index_roc,
+                   str(key_class), node_id, index_roc)
 
     return tex_string

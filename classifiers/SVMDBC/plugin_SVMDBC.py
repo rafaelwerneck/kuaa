@@ -101,7 +101,7 @@ def classify(images, classes_list, train_set, test_set, pos_fold, descriptor,
     print label_encoder.classes_
     if len(label_encoder.classes_) != 2:
         print "Classifier needs exactly 2 classes"
-        sys.exit(1)
+        return None, None, None, None, None
     
     #Read the train list and save the list of class and the list
     #of feature vectors

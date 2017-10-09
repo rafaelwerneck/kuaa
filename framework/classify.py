@@ -52,6 +52,7 @@ import util
 #CONSTANTS
 START = config.MESSAGE_MODULE_START
 PROGRESS = config.MESSAGE_MODULE_PROGRESS
+END_EXPERIMENT = config.MESSAGE_EXPERIMENT_FINISH
 POS_TRAIN = 0
 POS_TEST = 1
 POS_CLASSES = 0
@@ -154,6 +155,10 @@ def main(fv_paths, classes_list, train_test_list, experiment_folder, classifier,
                 model_paths = software.classify(images, classes_list,
                 train_test_list[pos][POS_TRAIN],
                 train_test_list[pos][POS_TEST], pos, descriptor, parameters)
+        if test_imgs == None: # In case of error in the plugin, end experiment
+            socket_framework.sendall("%s %s///" % (END_EXPERIMENT, None))
+            socket_framework.close()
+            
         print "Success of the classification"
         
         #Move the model of the classifier to the experiment_folder
