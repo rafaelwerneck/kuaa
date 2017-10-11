@@ -1,0 +1,10 @@
+<software name="CEDD">
+    <abletolink>database</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="float" name="T0" default="14" />
+    <parameter type="float" name="T1" default="0.68" />
+    <parameter type="float" name="T2" default="0.98" />
+    <parameter type="float" name="T3" default="0.98" />
+    <parameter type="checkbox" name="CompactDescriptor" default="False" />
+</software>
