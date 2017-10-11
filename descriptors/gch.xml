@@ -1,0 +1,6 @@
+<software name="GCH">
+    <abletolink>database</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="integer" name="Bins" default="64" fixed="True" />
+</software>
