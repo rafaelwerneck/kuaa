@@ -49,12 +49,10 @@ RUN sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
 RUN ldconfig
 
 
+RUN pip install jellyfish
 
 RUN mkdir /kuaa
-ADD classifiers  config.py    evaluation_measures  fusion_methods    initInterface.py \ 		 train_test_methods \
-		collections  descriptors  framework initFramework.py  interface        \
-		libraries  normalizers  recommendation \
-		/kuaa/
+ADD .	/kuaa/
 WORKDIR /kuaa/
 
 ENTRYPOINT ["python", "initInterface.py"]
