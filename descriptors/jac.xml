@@ -1,0 +1,20 @@
+<software name="JAC">
+    <abletolink>collection</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="dropdown" name="Colors" default="64">
+        <item>64</item>
+    </parameter>
+    <parameter type="dropdown" name="Gradients" default="5">
+        <item>5</item>
+    </parameter>
+    <parameter type="dropdown" name="Texturedness" default="5">
+        <item>5</item>
+    </parameter>
+    <parameter type="dropdown" name="Ranks" default="5">
+        <item>5</item>
+    </parameter>
+    <parameter type="dropdown" name="Distances" default="4">
+        <item>4</item>
+    </parameter>
+</software>

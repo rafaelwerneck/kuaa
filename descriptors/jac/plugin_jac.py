@@ -46,7 +46,7 @@ import util
 
 def extract(img_path, img_classes, param):
     """
-    Function that performs the extraction of an image using the GCH
+    Function that performs the extraction of an image using the JAC
     descriptor.
     
     This function transforms the image being extracted to the desired image
@@ -55,7 +55,7 @@ def extract(img_path, img_classes, param):
     output of the framework, a list of floats.
     """
     
-    print "Descriptor: GCH"
+    print "Descriptor: JAC"
     
     #CONSTANTS
     #Number of executions of the extraction
@@ -85,7 +85,7 @@ def extract(img_path, img_classes, param):
     
     #Convert the image to the desired format of the descriptor
     temp_img_path, converted = util.convert_desired_format(img_path, img_name,
-                                                          "PPM")
+                                                      "PPM")
     if converted:
         print "\tImage converted to PPM"
     
@@ -97,15 +97,14 @@ def extract(img_path, img_classes, param):
         system_platform = [platform.system(), platform.architecture()[0]]
         if system_platform[0] == 'Linux':
             if system_platform[1] == '32bit':
-                plugin_name = 'gch_32l.so'
+                plugin_name = 'jac_32l.so'
             else:
-                plugin_name = 'gch_64l.so'
+                plugin_name = 'jac_64l.so'
         else:
-            plugin_name = 'gch_64l.so'
+            plugin_name = 'jac_64l.so'
     
     #Extraction of the feature vector
     if not os.path.exists(fv_path):
-        #Example:
         setup = """
 ctypes = __import__('ctypes')
 plugin = "%s"
@@ -154,15 +153,27 @@ def fv_transform(fv_path):
     
     #Performs the necessary operations to transform the feature vector into
     #the standard output
-    values = file_fv.read().split()[1:]
-    for v in values:
-        list_fv.append(float(v))
+    # nColors, nTexturedness, nGradient, nRank, maxDistance);    
+    params = file_fv.readline().split()
+    n = int(params[0]) * int(params[1]) * int(params[2]) * int(params[3]) * \
+        int(params[4])
     
+    values = file_fv.readline().split()
+    k = 0
+    values_size = len(values) - 2 # original vector has -1 -1 as last values
+
+    for i in range(n):
+        if k < values_size and int(values[k]) == i:
+            list_fv.append(float(values[k+1]))
+            k += 2
+        else:
+            list_fv.append(0.0)
+                      
     file_fv.close()
     os.remove(fv_path)
-            
-    print "\tFeature vector transformed in the standard output"
     
+    print "\tFeature vector transformed in the standard output"
+
     return list_fv
     
 def distance(fv1, fv2):
@@ -186,11 +197,11 @@ def distance(fv1, fv2):
     system_platform = [platform.system(), platform.architecture()[0]]
     if system_platform[0] == 'Linux':
         if system_platform[1] == '32bit':
-            plugin_name = 'gch_32l.so'
+            plugin_name = 'jac_32l.so'
         else:
-            plugin_name = 'gch_64l.so'
+            plugin_name = 'jac_64l.so'
     else:
-        plugin_name = 'gch_64l.so'
+        plugin_name = 'jac_64l.so'
 
     plugin_path = os.path.join(descriptor_path, plugin_name)
     plugin = ctypes.CDLL(plugin_path)
@@ -198,40 +209,71 @@ def distance(fv1, fv2):
     #Descriptor exclusive
     #-------------------------------------------------------------------------
     #Creating class requested by the Distance function
-    class Histogram(ctypes.Structure):
+    class JointAutoCorrelogram(ctypes.Structure):
         #Example: Pointer to a float vector and an integer
-        _fields_ = [("v", ctypes.POINTER(ctypes.c_ubyte)),
-                    ("n", ctypes.c_int)]
+        _fields_ = [("h", ctypes.POINTER(ctypes.c_float)),
+                    ("nColors", ctypes.c_int),
+                    ("nGradient", ctypes.c_int),
+                    ("nTexturedness", ctypes.c_int),
+                    ("nRank", ctypes.c_int),
+                    ("maxDistance", ctypes.c_int)]
+    
+    #All Classes
+    import xml.etree.cElementTree as ET
+    import ast
+    xml_name = os.path.join("Experiment " + experiment_id, "experiment.xml")
+    xml_path = os.path.abspath(os.path.join(descriptor_path, "..", "..", "experiments", xml_name))
+    xml_file = ET.parse(xml_path)
+    xml_desc = xml_file.findall("descriptor")
+    for descriptor in xml_desc:
+        if descriptor.attrib["name"] == "jac":
+            parameters = ast.literal_eval(descriptor.get("parameters"))
+            num_colors = int(parameters["Colors"])
+            num_gradients = int(parameters["Gradients"])
+            num_texturedness = int(parameters["Texturedness"])
+            num_ranks = int(parameters["Ranks"])
+            num_distances = int(parameters["Distances"])
+            break
+    
+    print num_colors, num_gradients, num_texturedness, num_ranks, num_distances
     
     #First Class
-    Hist1 = Histogram()
+    JAC1 = JointAutoCorrelogram()
     
     len_fv1 = len(fv1)
-    fv1_int = map(int, fv1)
-    c_v1 = (ctypes.c_ubyte * len_fv1)(*fv1_int)
+    fv1_float = map(float, fv1)
+    c_h1 = (ctypes.c_float * len_fv1)(*fv1_float)
     
-    Hist1.v = ctypes.cast(c_v1, ctypes.POINTER(ctypes.c_ubyte))
-    Hist1.n = ctypes.c_int(len_fv1)
+    JAC1.h = ctypes.cast(c_h1, ctypes.POINTER(ctypes.c_float))
+    JAC1.nColors = ctypes.c_int(num_colors)
+    JAC1.nGradient = ctypes.c_int(num_gradients)
+    JAC1.nTexturedness = ctypes.c_int(num_texturedness)
+    JAC1.nRank = ctypes.c_int(num_ranks)
+    JAC1.maxDistance = ctypes.c_int(num_distances)
     
-    p_Hist1 = ctypes.pointer(Hist1)
+    p_JAC1 = ctypes.pointer(JAC1)
     
     #Second Class
-    Hist2 = Histogram()
+    JAC2 = JointAutoCorrelogram()
     
     len_fv2 = len(fv2)
-    fv2_int = map(float, fv2)
-    c_v2 = (ctypes.c_double * len_fv2)(*fv2_int)
+    fv2_float = map(float, fv2)
+    c_h2 = (ctypes.c_float * len_fv2)(*fv2_float)
     
-    Hist2.v = ctypes.cast(c_v2, ctypes.POINTER(ctypes.c_ubyte))
-    Hist2.n = ctypes.c_int(len_fv2)
+    JAC2.h = ctypes.cast(c_h2, ctypes.POINTER(ctypes.c_float))
+    JAC2.nColors = ctypes.c_int(num_colors)
+    JAC2.nGradient = ctypes.c_int(num_gradients)
+    JAC2.nTexturedness = ctypes.c_int(num_texturedness)
+    JAC2.nRank = ctypes.c_int(num_ranks)
+    JAC2.maxDistance = ctypes.c_int(num_distances)
     
-    p_Hist2 = ctypes.pointer(Hist2)
+    p_JAC2 = ctypes.pointer(JAC2)
     
     #Parameters of the Distance function
     plugin.Distance.restype = ctypes.c_double
     #-------------------------------------------------------------------------
     
     #Execution
-    distance = plugin.Distance(p_Hist1, p_Hist2)
+    distance = plugin.Distance(p_JAC1, p_JAC2)
     
     return distance

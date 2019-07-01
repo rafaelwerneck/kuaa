@@ -46,7 +46,7 @@ import util
 
 def extract(img_path, img_classes, param):
     """
-    Function that performs the extraction of an image using the GCH
+    Function that performs the extraction of an image using the QCCH
     descriptor.
     
     This function transforms the image being extracted to the desired image
@@ -55,7 +55,7 @@ def extract(img_path, img_classes, param):
     output of the framework, a list of floats.
     """
     
-    print "Descriptor: GCH"
+    print "Descriptor: QCCH"
     
     #CONSTANTS
     #Number of executions of the extraction
@@ -85,7 +85,7 @@ def extract(img_path, img_classes, param):
     
     #Convert the image to the desired format of the descriptor
     temp_img_path, converted = util.convert_desired_format(img_path, img_name,
-                                                          "PPM")
+                                                      "PPM")
     if converted:
         print "\tImage converted to PPM"
     
@@ -97,15 +97,14 @@ def extract(img_path, img_classes, param):
         system_platform = [platform.system(), platform.architecture()[0]]
         if system_platform[0] == 'Linux':
             if system_platform[1] == '32bit':
-                plugin_name = 'gch_32l.so'
+                plugin_name = 'qcch_32l.so'
             else:
-                plugin_name = 'gch_64l.so'
+                plugin_name = 'qcch_64l.so'
         else:
-            plugin_name = 'gch_64l.so'
+            plugin_name = 'qcch_64l.so'    
     
     #Extraction of the feature vector
     if not os.path.exists(fv_path):
-        #Example:
         setup = """
 ctypes = __import__('ctypes')
 plugin = "%s"
@@ -153,16 +152,16 @@ def fv_transform(fv_path):
         sys.exit(1)
     
     #Performs the necessary operations to transform the feature vector into
-    #the standard output
+    #the standard output    
     values = file_fv.read().split()[1:]
     for v in values:
         list_fv.append(float(v))
     
     file_fv.close()
     os.remove(fv_path)
-            
-    print "\tFeature vector transformed in the standard output"
     
+    print "\tFeature vector transformed in the standard output"
+
     return list_fv
     
 def distance(fv1, fv2):
@@ -186,11 +185,11 @@ def distance(fv1, fv2):
     system_platform = [platform.system(), platform.architecture()[0]]
     if system_platform[0] == 'Linux':
         if system_platform[1] == '32bit':
-            plugin_name = 'gch_32l.so'
+            plugin_name = 'qcch_32l.so'
         else:
-            plugin_name = 'gch_64l.so'
+            plugin_name = 'qcch_64l.so'
     else:
-        plugin_name = 'gch_64l.so'
+        plugin_name = 'qcch_64l.so'  
 
     plugin_path = os.path.join(descriptor_path, plugin_name)
     plugin = ctypes.CDLL(plugin_path)
@@ -198,40 +197,40 @@ def distance(fv1, fv2):
     #Descriptor exclusive
     #-------------------------------------------------------------------------
     #Creating class requested by the Distance function
-    class Histogram(ctypes.Structure):
-        #Example: Pointer to a float vector and an integer
-        _fields_ = [("v", ctypes.POINTER(ctypes.c_ubyte)),
-                    ("n", ctypes.c_int)]
+#    class Class_Example(ctypes.Structure):
+#        #Example: Pointer to a float vector and an integer
+#        _fields_ = [("first_field", ctypes.POINTER(ctypes.c_double)),
+#                    ("second_field", ctypes.c_int)]
     
     #First Class
-    Hist1 = Histogram()
+#    Class1 = Class_Example()
     
     len_fv1 = len(fv1)
-    fv1_int = map(int, fv1)
-    c_v1 = (ctypes.c_ubyte * len_fv1)(*fv1_int)
+    fv1_float = map(float, fv1)
+    c_fv1 = (ctypes.c_double * len_fv1)(*fv1_float)
     
-    Hist1.v = ctypes.cast(c_v1, ctypes.POINTER(ctypes.c_ubyte))
-    Hist1.n = ctypes.c_int(len_fv1)
+#    Class1.first_field = ctypes.cast(c_first1, ctypes.POINTER(ctypes.c_double))
+#    Class1.second_field = ctypes.c_int(len_fv1)
     
-    p_Hist1 = ctypes.pointer(Hist1)
+    p_fv1 = ctypes.pointer(c_fv1)
     
     #Second Class
-    Hist2 = Histogram()
+#    Class2 = Class_Example()
     
     len_fv2 = len(fv2)
-    fv2_int = map(float, fv2)
-    c_v2 = (ctypes.c_double * len_fv2)(*fv2_int)
+    fv2_float = map(float, fv2)
+    c_fv2 = (ctypes.c_double * len_fv2)(*fv2_float)
     
-    Hist2.v = ctypes.cast(c_v2, ctypes.POINTER(ctypes.c_ubyte))
-    Hist2.n = ctypes.c_int(len_fv2)
+#    Class2.first_field = ctypes.cast(c_first2, ctypes.POINTER(ctypes.c_double))
+#    Class2.second_field = ctypes.c_int(len_fv2)
     
-    p_Hist2 = ctypes.pointer(Hist2)
+    p_fv2 = ctypes.pointer(c_fv2)
     
     #Parameters of the Distance function
     plugin.Distance.restype = ctypes.c_double
     #-------------------------------------------------------------------------
     
     #Execution
-    distance = plugin.Distance(p_Hist1, p_Hist2)
+    distance = plugin.Distance(p_fv1, p_fv2)
     
     return distance

@@ -1,5 +1,5 @@
 <software name="CEDD">
-    <abletolink>database</abletolink>
+    <abletolink>collection</abletolink>
     <abletolink>train_test_method</abletolink>
     <abletolink>fusion_method</abletolink>
     <parameter type="float" name="T0" default="14" />

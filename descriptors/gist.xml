@@ -1,0 +1,7 @@
+<software name="GIST">
+    <abletolink>collection</abletolink>
+    <abletolink>train_test_method</abletolink>
+    <abletolink>fusion_method</abletolink>
+    <parameter type="integer" name="Cell Size" default="4" />
+    <parameter type="list" name="Orientations" default="8,8,4" />
+</software>

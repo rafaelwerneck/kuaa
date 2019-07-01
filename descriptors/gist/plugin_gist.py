@@ -38,15 +38,14 @@
 #Python imports
 import os
 import sys
-import timeit
-import platform
+import subprocess
 
 #Imports from the framework
 import util
 
 def extract(img_path, img_classes, param):
     """
-    Function that performs the extraction of an image using the GCH
+    Function that performs the extraction of an image using the GIST
     descriptor.
     
     This function transforms the image being extracted to the desired image
@@ -55,11 +54,15 @@ def extract(img_path, img_classes, param):
     output of the framework, a list of floats.
     """
     
-    print "Descriptor: GCH"
+    print "Descriptor: GIST"
     
     #CONSTANTS
     #Number of executions of the extraction
     NUM_EXEC = 1
+    
+    #PARAMETERS
+    cell_size = param["Cell Size"]
+    orientations = param["Orientations"]
     
     #PATHS
     #Path for the folder containing the descriptor executable
@@ -80,8 +83,7 @@ def extract(img_path, img_classes, param):
     list_classes = ""
     for name_class in img_classes:
         list_classes += str(name_class) + "_"
-    list_names = img_path.split(os.sep)
-    img_name = list_classes + list_names[-2] + "_" + list_names[-1]
+    img_name = list_classes + img_path.split(os.sep)[-1]
     
     #Convert the image to the desired format of the descriptor
     temp_img_path, converted = util.convert_desired_format(img_path, img_name,
@@ -92,38 +94,13 @@ def extract(img_path, img_classes, param):
     #Path of the file with the feature vector of an image
     fv_path = os.path.join(path_temp, img_name + ".fv")
     
-    # Extraction of the feature vector
-    if not os.path.exists(fv_path):
-        system_platform = [platform.system(), platform.architecture()[0]]
-        if system_platform[0] == 'Linux':
-            if system_platform[1] == '32bit':
-                plugin_name = 'gch_32l.so'
-            else:
-                plugin_name = 'gch_64l.so'
-        else:
-            plugin_name = 'gch_64l.so'
-    
     #Extraction of the feature vector
     if not os.path.exists(fv_path):
-        #Example:
-        setup = """
-ctypes = __import__('ctypes')
-plugin = "%s"
-lib = ctypes.CDLL("%s%s" + plugin)
-img_path = "%s"
-fv_path = "%s"
-        """%(plugin_name, descriptor_path, os.sep, temp_img_path, fv_path)
+        cmd = 'cd "%s"; ./compute_gist "%s" "%s" -nblocks %d \
+            -orientationsPerScale "%s"' % (descriptor_path, temp_img_path,
+            fv_path, cell_size, orientations)
         
-        cmd = """
-lib.Extraction(img_path, fv_path)
-        """
-        
-        t = timeit.Timer(stmt=cmd, setup=setup)
-        try:
-            t.timeit(number=NUM_EXEC)
-            print "\tFeature vector extracted"
-        except:
-            t.print_exc()
+        subprocess.call(cmd, shell=True)
     
     #Remove the temporary image
     if converted:
@@ -154,7 +131,7 @@ def fv_transform(fv_path):
     
     #Performs the necessary operations to transform the feature vector into
     #the standard output
-    values = file_fv.read().split()[1:]
+    values = file_fv.read().split()
     for v in values:
         list_fv.append(float(v))
     
@@ -164,74 +141,3 @@ def fv_transform(fv_path):
     print "\tFeature vector transformed in the standard output"
     
     return list_fv
-    
-def distance(fv1, fv2):
-    """
-    Performs the calculation of distance between the two feature vectors,
-    according to the Distance function of the executable.
-    
-    Inputs:
-        - fv1 (list of floats): First feature vector
-        - fv2 (list of floats): Second feature vector
-    
-    Output:
-        - distance (double): Distance between the two feature vectors
-    """
-    
-    #Imports
-    import ctypes
-    
-    descriptor_path = os.path.dirname(__file__)
-
-    system_platform = [platform.system(), platform.architecture()[0]]
-    if system_platform[0] == 'Linux':
-        if system_platform[1] == '32bit':
-            plugin_name = 'gch_32l.so'
-        else:
-            plugin_name = 'gch_64l.so'
-    else:
-        plugin_name = 'gch_64l.so'
-
-    plugin_path = os.path.join(descriptor_path, plugin_name)
-    plugin = ctypes.CDLL(plugin_path)
-    
-    #Descriptor exclusive
-    #-------------------------------------------------------------------------
-    #Creating class requested by the Distance function
-    class Histogram(ctypes.Structure):
-        #Example: Pointer to a float vector and an integer
-        _fields_ = [("v", ctypes.POINTER(ctypes.c_ubyte)),
-                    ("n", ctypes.c_int)]
-    
-    #First Class
-    Hist1 = Histogram()
-    
-    len_fv1 = len(fv1)
-    fv1_int = map(int, fv1)
-    c_v1 = (ctypes.c_ubyte * len_fv1)(*fv1_int)
-    
-    Hist1.v = ctypes.cast(c_v1, ctypes.POINTER(ctypes.c_ubyte))
-    Hist1.n = ctypes.c_int(len_fv1)
-    
-    p_Hist1 = ctypes.pointer(Hist1)
-    
-    #Second Class
-    Hist2 = Histogram()
-    
-    len_fv2 = len(fv2)
-    fv2_int = map(float, fv2)
-    c_v2 = (ctypes.c_double * len_fv2)(*fv2_int)
-    
-    Hist2.v = ctypes.cast(c_v2, ctypes.POINTER(ctypes.c_ubyte))
-    Hist2.n = ctypes.c_int(len_fv2)
-    
-    p_Hist2 = ctypes.pointer(Hist2)
-    
-    #Parameters of the Distance function
-    plugin.Distance.restype = ctypes.c_double
-    #-------------------------------------------------------------------------
-    
-    #Execution
-    distance = plugin.Distance(p_Hist1, p_Hist2)
-    
-    return distance

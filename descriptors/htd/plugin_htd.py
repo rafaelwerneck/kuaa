@@ -46,8 +46,7 @@ import util
 
 def extract(img_path, img_classes, param):
     """
-    Function that performs the extraction of an image using the GCH
-    descriptor.
+    Function that performs the extraction of an image using the HTD descriptor.
     
     This function transforms the image being extracted to the desired image
     format of the descriptor, performs the extraction of the image, and last,
@@ -55,7 +54,7 @@ def extract(img_path, img_classes, param):
     output of the framework, a list of floats.
     """
     
-    print "Descriptor: GCH"
+    print "Descriptor: HTD"
     
     #CONSTANTS
     #Number of executions of the extraction
@@ -85,7 +84,7 @@ def extract(img_path, img_classes, param):
     
     #Convert the image to the desired format of the descriptor
     temp_img_path, converted = util.convert_desired_format(img_path, img_name,
-                                                          "PPM")
+                                                      "PPM")
     if converted:
         print "\tImage converted to PPM"
     
@@ -97,15 +96,14 @@ def extract(img_path, img_classes, param):
         system_platform = [platform.system(), platform.architecture()[0]]
         if system_platform[0] == 'Linux':
             if system_platform[1] == '32bit':
-                plugin_name = 'gch_32l.so'
+                plugin_name = 'htd_32l.so'
             else:
-                plugin_name = 'gch_64l.so'
+                plugin_name = 'htd_64l.so'
         else:
-            plugin_name = 'gch_64l.so'
-    
+            plugin_name = 'htd_64l.so'
+
     #Extraction of the feature vector
     if not os.path.exists(fv_path):
-        #Example:
         setup = """
 ctypes = __import__('ctypes')
 plugin = "%s"
@@ -154,15 +152,15 @@ def fv_transform(fv_path):
     
     #Performs the necessary operations to transform the feature vector into
     #the standard output
-    values = file_fv.read().split()[1:]
+    values = file_fv.read().split()
     for v in values:
         list_fv.append(float(v))
     
     file_fv.close()
     os.remove(fv_path)
-            
-    print "\tFeature vector transformed in the standard output"
     
+    print "\tFeature vector transformed in the standard output"
+
     return list_fv
     
 def distance(fv1, fv2):
@@ -186,11 +184,11 @@ def distance(fv1, fv2):
     system_platform = [platform.system(), platform.architecture()[0]]
     if system_platform[0] == 'Linux':
         if system_platform[1] == '32bit':
-            plugin_name = 'gch_32l.so'
+            plugin_name = 'htd_32l.so'
         else:
-            plugin_name = 'gch_64l.so'
+            plugin_name = 'htd_64l.so'
     else:
-        plugin_name = 'gch_64l.so'
+        plugin_name = 'htd_64l.so'
 
     plugin_path = os.path.join(descriptor_path, plugin_name)
     plugin = ctypes.CDLL(plugin_path)
@@ -198,40 +196,68 @@ def distance(fv1, fv2):
     #Descriptor exclusive
     #-------------------------------------------------------------------------
     #Creating class requested by the Distance function
-    class Histogram(ctypes.Structure):
+    class Mpeg7HTDDescriptor(ctypes.Structure):
         #Example: Pointer to a float vector and an integer
-        _fields_ = [("v", ctypes.POINTER(ctypes.c_ubyte)),
-                    ("n", ctypes.c_int)]
+        _fields_ = [("scale", ctypes.c_int),
+                    ("orientation", ctypes.c_int),
+                    ("media", ctypes.POINTER(ctypes.c_float)),
+                    ("desvio", ctypes.POINTER(ctypes.c_float))]
     
     #First Class
-    Hist1 = Histogram()
+    HTD1 = Mpeg7HTDDescriptor()
     
-    len_fv1 = len(fv1)
-    fv1_int = map(int, fv1)
-    c_v1 = (ctypes.c_ubyte * len_fv1)(*fv1_int)
+    scale1 = int(fv1[0])
+    orientation1 = int(fv1[1])
+    fv1 = fv1[2:]
     
-    Hist1.v = ctypes.cast(c_v1, ctypes.POINTER(ctypes.c_ubyte))
-    Hist1.n = ctypes.c_int(len_fv1)
+    media1 = []
+    desvio1 = []
+    temp1 = [fv1[i] for i in range(2 * scale1 * orientation1) if i % 2 == 0]
+    temp2 = [fv1[i] for i in range(2 * scale1 * orientation1) if i % 2 == 1]
+    temp_list = zip(temp1, temp2)
+    for temp_tuple in temp_list:
+        media1.append(temp_tuple[0])
+        desvio1.append(temp_tuple[1])
+    c_media = (ctypes.c_float * (scale1 * orientation1))(*media1)
+    c_desvio = (ctypes.c_float * (scale1 * orientation1))(*desvio1)
     
-    p_Hist1 = ctypes.pointer(Hist1)
+    HTD1.scale = ctypes.c_int(scale1)
+    HTD1.orientation = ctypes.c_int(orientation1)
+    HTD1.media = ctypes.cast(c_media, ctypes.POINTER(ctypes.c_float))
+    HTD1.desvio = ctypes.cast(c_desvio, ctypes.POINTER(ctypes.c_float))
+    
+    p_HTD1 = ctypes.pointer(HTD1)
     
     #Second Class
-    Hist2 = Histogram()
+    HTD2 = Mpeg7HTDDescriptor()
     
-    len_fv2 = len(fv2)
-    fv2_int = map(float, fv2)
-    c_v2 = (ctypes.c_double * len_fv2)(*fv2_int)
+    scale2 = int(fv2[0])
+    orientation2 = int(fv2[1])
+    fv2 = fv2[2:]
     
-    Hist2.v = ctypes.cast(c_v2, ctypes.POINTER(ctypes.c_ubyte))
-    Hist2.n = ctypes.c_int(len_fv2)
+    media2 = []
+    desvio2 = []
+    temp1 = [fv2[i] for i in range(2 * scale2 * orientation2) if i % 2 == 0]
+    temp2 = [fv2[i] for i in range(2 * scale2 * orientation2) if i % 2 == 1]
+    temp_list = zip(temp1, temp2)
+    for temp_tuple in temp_list:
+        media2.append(temp_tuple[0])
+        desvio2.append(temp_tuple[1])
+    c_media = (ctypes.c_float * (scale2 * orientation2))(*media2)
+    c_desvio = (ctypes.c_float * (scale2 * orientation2))(*desvio2)
     
-    p_Hist2 = ctypes.pointer(Hist2)
+    HTD2.scale = ctypes.c_int(scale2)
+    HTD2.orientation = ctypes.c_int(orientation2)
+    HTD1.media = ctypes.cast(c_media, ctypes.POINTER(ctypes.c_float))
+    HTD1.desvio = ctypes.cast(c_desvio, ctypes.POINTER(ctypes.c_float))
+    
+    p_HTD2 = ctypes.pointer(HTD2)
     
     #Parameters of the Distance function
     plugin.Distance.restype = ctypes.c_double
     #-------------------------------------------------------------------------
     
     #Execution
-    distance = plugin.Distance(p_Hist1, p_Hist2)
+    distance = plugin.Distance(p_HTD1, p_HTD2)
     
     return distance
